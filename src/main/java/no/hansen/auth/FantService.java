@@ -12,6 +12,7 @@ import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -76,13 +77,21 @@ public class FantService {
     @DELETE
     @Path("remove")
     @RolesAllowed(value = {Group.USER})
-    public Response delete(@QueryParam("id") Long id) {
-        Item itemToDelete = 
-        
+    public Response deleteItem(@QueryParam("itemid") Long itemId) {
+        Item itemToDelete = em.find(Item.class, itemId);
+         if (itemToDelete != null) {
+             User itemDeleter = this.getCurrentUser();
+             if(itemToDelete.getItemSeller().equals(itemDeleter)) {
+                 em.remove(itemToDelete);
+                 return Response.ok().build();
+             }
+             return Response.status(Response.Status.UNAUTHORIZED).build();
+         }
+        return Response.notModified().build();
     }
     
     public Response purchase(@FormParam("itembuyer") User itemBuyer, 
-            @FormParam("id") Long id) {
+            @FormParam("itemid") Long itemId) {
         
     }
 }
