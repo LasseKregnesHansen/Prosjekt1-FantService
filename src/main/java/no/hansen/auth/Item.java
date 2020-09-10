@@ -15,6 +15,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -40,8 +42,12 @@ public class Item implements Serializable {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long itemId;
     
+    @NotEmpty
     private String itemTitle;
+    
+    @NotNull
     private BigDecimal itemPrice;
+    
     private String itemDesc;
     
     @ManyToOne
