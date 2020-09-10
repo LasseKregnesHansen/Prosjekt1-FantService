@@ -99,8 +99,15 @@ public class FantService {
                 itemBuyer = this.getCurrentUser();
                 itemToPurchase.setItemBuyer(itemBuyer);
                 MailService mail = new MailService();
-                mail.sendEmail(to, subject, body);
+                mail.sendEmail(itemToPurchase.getItemSeller().getEmail(), 
+                        "Your item with ID: " + itemToPurchase.getItemId() + " and title: " + itemToPurchase.getItemTitle() + " has been purchased.",
+                        "Your item sold for " + itemToPurchase.getItemPrice() + "kr by: " + itemToPurchase.getItemBuyer().getEmail());
+                //Buyer has been found and message sent to seller.
+                return Response.ok().build();
             } 
+            //Buyer of an item is already known...?
         }
+        //Item was not found
+        return Response.notModified().build();
     }
 }
