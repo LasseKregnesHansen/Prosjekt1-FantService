@@ -52,7 +52,7 @@ public class FantService {
     @Path("additem")
     @RolesAllowed(value = {Group.USER})
     @Produces(MediaType.APPLICATION_JSON)
-    public Response.ResponseBuilder addItem(@FormParam("itemTitle") String itemTitle,  @FormParam("itemPrice") BigDecimal itemPrice,
+    public Response addItem(@FormParam("itemTitle") String itemTitle,  @FormParam("itemPrice") BigDecimal itemPrice,
             @FormParam("itemDesc") String itemDesc) {
         Item itemSale = new Item();
         User itemSeller = this.getCurrentUser();
@@ -60,7 +60,7 @@ public class FantService {
         itemSale.setItemPrice(itemPrice);
         itemSale.setItemDesc(itemDesc);
         itemSale.setItemSeller(itemSeller);
-        return Response.ok(em.merge(itemSale));
+        return Response.ok(em.merge(itemSale)).build();
     }
     
     @GET
@@ -81,17 +81,26 @@ public class FantService {
         Item itemToDelete = em.find(Item.class, itemId);
          if (itemToDelete != null) {
              User itemDeleter = this.getCurrentUser();
-             if(itemToDelete.getItemSeller().equals(itemDeleter)) {
+             if(itemToDelete.getItemSeller().equals(itemDeleter)) { //if the item a user wants to delete is found and user has authority, delete item.
                  em.remove(itemToDelete);
                  return Response.ok().build();
              }
-             return Response.status(Response.Status.UNAUTHORIZED).build();
+             return Response.status(Response.Status.UNAUTHORIZED).build(); //if the item is found but user does not have authority to delete.
          }
-        return Response.notModified().build();
+        return Response.notModified().build(); //if no item is found do nothing.
     }
     
-    public Response purchase(@FormParam("itembuyer") User itemBuyer, 
+    
+    public Response purchaseItem(@FormParam("itembuyer") User itemBuyer, 
             @FormParam("itemid") Long itemId) {
-        
+        Item itemToPurchase = em.find(Item.class, itemId);
+        if (itemToPurchase != null) {
+            if (itemToPurchase.getItemBuyer() == null) { //finds buyer if item is found
+                itemBuyer = this.getCurrentUser();
+                itemToPurchase.setItemBuyer(itemBuyer);
+                MailService mail = new MailService();
+                mail.sendEmail(to, subject, body);
+            } 
+        }
     }
 }
