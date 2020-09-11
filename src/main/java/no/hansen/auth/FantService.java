@@ -68,7 +68,7 @@ public class FantService {
     @Path("getitems")
     @Produces(MediaType.APPLICATION_JSON)
     public List<Item> getItems() {
-        return em.createNativeQuery("SELECT * FROM ITEM", Item.class).getResultList();
+        return em.createNativeQuery(Item.FIND_ALL_ITEMS, Item.class).getResultList();
     }
     
     @GET
