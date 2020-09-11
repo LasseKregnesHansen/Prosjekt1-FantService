@@ -17,6 +17,7 @@ import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
@@ -70,8 +71,11 @@ public class FantService {
         return em.createNativeQuery("SELECT * FROM ITEM", Item.class).getResultList();
     }
     
-    public Response getPhoto() {
-        
+    /* TODO */
+    @GET
+    @Path("photo/{name}")
+    public Response getPhoto(@PathParam("name") String name, @QueryParam("width") int width) {
+        return Response.ok().build();
     }
     
     @DELETE
