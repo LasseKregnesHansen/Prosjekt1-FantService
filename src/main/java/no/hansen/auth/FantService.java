@@ -71,6 +71,17 @@ public class FantService {
         return em.createNativeQuery("SELECT * FROM ITEM", Item.class).getResultList();
     }
     
+    @GET
+    @Path("itemId")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getAnItem(@PathParam("itemId") String itemID) {
+        Item item = em.createNamedQuery(Item.FIND_ITEM_BY_IDS, Item.class).setParameter("itemid", itemID).getSingleResult();
+        if(item == null) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+        return Response.ok(item).build();
+    }
+    
     /* TODO */
     @GET
     @Path("photo/{name}")
