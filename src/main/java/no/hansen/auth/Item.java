@@ -29,10 +29,10 @@ import static no.hansen.auth.Item.FIND_ITEM_BY_IDS;
  * @author LasseKH
  */
 @AllArgsConstructor
-@Data
+@Data @Table(name = "AITEM")
 @Entity
 @NoArgsConstructor
-@NamedQuery(name = FIND_ITEM_BY_IDS, query = "select i from Item i order by i.itemid")
+@NamedQuery(name = FIND_ITEM_BY_IDS, query = "select i from Item i order by i.itemId")
 @NamedQuery(name = FIND_ALL_ITEMS, query = "select i from Item i")
 public class Item implements Serializable {
     public static final String FIND_ITEM_BY_IDS = "Item.findItemByIds";

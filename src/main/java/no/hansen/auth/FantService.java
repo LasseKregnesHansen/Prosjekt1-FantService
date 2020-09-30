@@ -41,13 +41,13 @@ public class FantService {
     @Inject
     JsonWebToken principal;
     
-    @GET
-    @Path("currentuser")    
-    @RolesAllowed(value = {Group.USER})
-    @Produces(MediaType.APPLICATION_JSON)
-    private User getCurrentUser() {
-        return em.find(User.class, principal.getName());
-    }
+    //@GET
+    //@Path("currentuser")    
+    //@RolesAllowed(value = {Group.USER})
+    //@Produces(MediaType.APPLICATION_JSON)
+    //private User getCurrentUser() {
+    //    return em.find(User.class, principal.getName());
+    //}
     
     @POST
     @Path("additem")
@@ -56,7 +56,7 @@ public class FantService {
     public Response addItem(@FormParam("itemTitle") String itemTitle,  @FormParam("itemPrice") BigDecimal itemPrice,
             @FormParam("itemDesc") String itemDesc) {
         Item itemSale = new Item();
-        User itemSeller = this.getCurrentUser();
+        User itemSeller = as.getCurrentUser();
         itemSale.setItemTitle(itemTitle);
         itemSale.setItemPrice(itemPrice);
         itemSale.setItemDesc(itemDesc);
@@ -68,7 +68,7 @@ public class FantService {
     @Path("getitems")
     @Produces(MediaType.APPLICATION_JSON)
     public List<Item> getItems() {
-        return em.createNativeQuery(Item.FIND_ALL_ITEMS, Item.class).getResultList();
+        return em.createNamedQuery(Item.FIND_ALL_ITEMS, Item.class).getResultList();
     }
     
     @GET
@@ -92,10 +92,10 @@ public class FantService {
     @DELETE
     @Path("remove")
     @RolesAllowed(value = {Group.USER})
-    public Response deleteItem(@QueryParam("itemid") Long itemId) {
+    public Response deleteItem(@QueryParam("itemId") Long itemId) {
         Item itemToDelete = em.find(Item.class, itemId);
          if (itemToDelete != null) {
-             User itemDeleter = this.getCurrentUser();
+             User itemDeleter = as.getCurrentUser();
              if(itemToDelete.getItemSeller().equals(itemDeleter)) { //if the item a user wants to delete is found and user has authority, delete item.
                  em.remove(itemToDelete);
                  return Response.ok().build();
@@ -105,13 +105,14 @@ public class FantService {
         return Response.notModified().build(); //if no item is found do nothing.
     }
     
-    
-    public Response purchaseItem(@FormParam("itembuyer") User itemBuyer, 
-            @FormParam("itemid") Long itemId) {
+    @GET
+    @Path("purchase")
+    @RolesAllowed(value = {Group.USER})
+    public Response purchaseItem(@QueryParam("itemId") Long itemId) {
         Item itemToPurchase = em.find(Item.class, itemId);
         if (itemToPurchase != null) {
             if (itemToPurchase.getItemBuyer() == null) { //finds buyer if item is found
-                itemBuyer = this.getCurrentUser();
+                User itemBuyer = as.getCurrentUser();
                 itemToPurchase.setItemBuyer(itemBuyer);
                 MailService mail = new MailService();
                 mail.sendEmail(itemToPurchase.getItemSeller().getEmail(), 
@@ -120,7 +121,9 @@ public class FantService {
                 //Buyer has been found and message sent to seller.
                 return Response.ok().build();
             } 
-            //Buyer of an item is already known...?
+            else {
+                return Response.ok("Item not for purchase.").build();
+            }
         }
         //Item was not found
         return Response.notModified().build();
