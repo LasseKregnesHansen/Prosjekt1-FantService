@@ -93,4 +93,8 @@ public class User implements Serializable {
         }
         return groups;
     }
+    
+    public String getEmail() {
+        return email;
+    }
 }
