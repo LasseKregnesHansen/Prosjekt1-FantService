@@ -60,4 +60,27 @@ public class Item implements Serializable {
     /*@OneToMany
     private List<ItemImages> itemImage;*/
     
+    public Long getItemId(){
+        return itemId;
+    }
+    
+    public String getItemTitle() {
+        return itemTitle;
+    }
+    
+    public BigDecimal getItemPrice() {
+        return itemPrice;
+    }
+    
+    public String getItemDesc() {
+        return itemDesc;
+    }
+    
+    public User getItemBuyer() {
+        return itemBuyer;
+    }
+    
+    public User getItemSeller() {
+        return itemSeller;
+    }
 }
